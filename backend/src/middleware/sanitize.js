@@ -1,5 +1,5 @@
-// Basic input sanitization for common injection patterns
-const sanitizeHtml = require('sanitize-html');
+const xss = require('xss');
+
 function sanitizeInput(obj, allowedFields = []) {
   if (typeof obj !== 'object' || obj === null) return;
 
@@ -8,12 +8,9 @@ function sanitizeInput(obj, allowedFields = []) {
 
     if (typeof val === 'string') {
       if (allowedFields.length === 0 || allowedFields.includes(key)) {
-        obj[key] = sanitizeHtml(val, {
-          allowedTags: [],
-          allowedAttributes: {},
-        });
+        obj[key] = xss(val);
       }
-    } else if (val && typeof val === 'object') {
+    } else if (typeof val === 'object') {
       sanitizeInput(val, allowedFields);
     }
   }
